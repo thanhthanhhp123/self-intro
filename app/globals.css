@@ -1,0 +1,81 @@
+/* Scan code folders only, so words in the Markdown docs don't become classes. */
+@import "tailwindcss" source(none);
+@source "../app";
+@source "../components";
+
+:root {
+  --paper: #eceef0;
+  --surface: #f7f8f9;
+  --ink: #14181f;
+  --muted: #5b6472;
+  --grid: #c9ced6;
+  --signal: #1f4bff;
+  --heat: #ff5a1f; /* EdgePipeline only: latency and heat */
+}
+
+/* Only the tokens exist as colors, so off-palette classes fail to build. */
+@theme inline {
+  --color-*: initial;
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-grid: var(--grid);
+  --color-signal: var(--signal);
+  --color-heat: var(--heat);
+
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-source-serif), ui-serif, Georgia, serif;
+}
+
+/* Type scale 14 / 16 / 20 / 28 / 44 / 72; the top two are fluid. */
+@theme {
+  --text-*: initial;
+  --text-caption: 0.875rem;
+  --text-caption--line-height: 1.45;
+  --text-small: 1rem;
+  --text-small--line-height: 1.65;
+  --text-body: 1.25rem;
+  --text-body--line-height: 1.65;
+  --text-h3: 1.75rem;
+  --text-h3--line-height: 1.2;
+  --text-h2: clamp(1.75rem, 1.2rem + 2.4vw, 2.75rem);
+  --text-h2--line-height: 1.1;
+  --text-display: clamp(2.75rem, 1.8rem + 4vw, 4.5rem);
+  --text-display--line-height: 1.05;
+}
+
+@layer base {
+  html {
+    background-color: var(--paper);
+    color: var(--ink);
+  }
+
+  body {
+    font-family: --theme(--font-body);
+    font-size: --theme(--text-small);
+    line-height: 1.65;
+
+    @variant md {
+      font-size: --theme(--text-body);
+    }
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: --theme(--font-display);
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--signal);
+    color: var(--paper);
+  }
+}
