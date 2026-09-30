@@ -2,13 +2,16 @@
 // Anything marked TODO(owner) is a placeholder for the site owner to edit.
 
 export const site = {
-  name: "YOUR NAME", // TODO(owner)
+  name: "Thanh Tran Quang", // TODO(owner)
   role: "AI Engineer",
   focus: "Edge AI and Computer Vision",
   headline: "I build vision models that run on the device, not in the cloud.",
   intro:
     "AI Engineer working across the stack, from data and training to optimization and deployment. Strongest where models have to be fast, small, and reliable on real hardware.",
-  links: { email: "", github: "", linkedin: "", upwork: "" }, // TODO(owner)
+  links: { email: "thanhmaxdz2003@gmail.com", github: "https://github.com/thanhthanhhp123", linkedin: "https://www.linkedin.com/in/quang-th%C3%A0nh-tr%E1%BA%A7n-103a78234", upwork: "https://upwork.com/freelancers/~01cd79ade41c025108" }, // TODO(owner)
+  // TODO(owner): your own domain, e.g. "https://example.com". Leave empty on
+  // Vercel to use the project's production URL.
+  url: "",
   linkLabels: {
     contact: "Contact",
     email: "Email",
