@@ -7,7 +7,7 @@ Bản kế hoạch thiết kế đã duyệt. `CLAUDE.md` vẫn là spec gốc; 
 - [x] Task 1: layout, token, font, SmoothScroll, `site.ts`
 - [x] Task 2: Hero (Lighthouse Performance chưa đạt 90, xem ghi chú bên dưới)
 - [x] Task 3: EdgePipeline (Lighthouse Performance vẫn chưa ổn định trên 90, xem ghi chú)
-- [ ] Task 4: Capabilities, Approach, Contact (section Contact phải có `id="contact"`: nút Contact ở Hero trỏ tới đó)
+- [x] Task 4: Capabilities, Approach, Contact (Lighthouse Performance vẫn chưa đạt 90, xem ghi chú)
 - [ ] Task 5: polish, metadata, OG image, Lighthouse, deploy (đo lại Performance bằng PageSpeed Insights trên bản Vercel)
 
 ## Quyết định đã chốt
@@ -34,11 +34,17 @@ Bản kế hoạch thiết kế đã duyệt. `CLAUDE.md` vẫn là spec gốc; 
   - Stage có hai chế độ: không có `step` thì là trạng thái đầu của animation, có `step` thì đứng yên ở cuối bước đó (dùng cho bản reduced motion).
   - Dưới 1024px, pin vẫn áp lên cả section nhưng bắt đầu khi thanh bước chạm mép trên, nên tiêu đề cuộn đi trước. Pin cả tiêu đề thì không vừa màn 375×548. Wireframe mobile ở trên vẽ tiêu đề nằm trong vùng pin; bản code khác chỗ này.
   - Chiều rộng stage tính theo chiều cao màn hình (`max-w-[calc((100svh-…)*1.6)]`), nên stage luôn nằm gọn trong viewport lúc pin (đã đo ở 320, 375×548, 375×667, 390×844, 768×1024, 1024×768, 1366×657, 1440×900).
-  - Pin chỉ chạy hết khi sau section còn đủ nội dung để cuộn. Lúc làm Task 3 chưa có section nào phía sau, nên ở 390×844 và 768×1024 trang hết trước khi timeline tới cuối (lúc test đã chèn tạm một khối trống). Sau Task 4 cần kiểm tra lại.
+  - Pin chỉ chạy hết khi sau section còn đủ nội dung để cuộn. Lúc làm Task 3 chưa có section nào phía sau, nên ở 390×844 và 768×1024 trang hết trước khi timeline tới cuối (lúc test đã chèn tạm một khối trống). Đã kiểm tra lại sau Task 4: cuộn tới cuối trang thì timeline chạy hết ở 375×812, 390×844, 768×1024 và 1440×900.
   - Lighthouse mobile sau Task 3 (bản `out/`, localhost, mỗi cấu hình chạy 3 lần): Accessibility, Best Practices, SEO đều 100, CLS 0.
     - Server tĩnh không nén (giống lúc đo Task 2): Performance 59, 65, 68. Mạng giả lập tải JS và HTML ở dạng chưa nén, nên điểm bị kéo xuống.
     - Server có gzip (gần với Vercel hơn): Performance 82, 83, 85; LCP 3.2 s (headline Hero), TBT 330–420 ms.
     - Đối chứng trên cùng server gzip, bỏ tạm EdgePipeline: Performance 84, 84, 91. Chênh lệch nằm trong biên dao động của máy, nên pipeline không làm trang chậm đi đáng kể. Performance 90+ vẫn là việc của Task 5.
+- Capabilities, Approach, Contact (Task 4):
+  - Cả ba là server component, không thêm JS phía client và không có chuyển động.
+  - Capabilities và Approach dùng chung `components/ui/Section.tsx`: hairline trên cùng, tiêu đề ở cột 4/12, nội dung ở cột 8/12; dưới 1024px tiêu đề nằm trên nội dung. EdgePipeline không dùng khung này vì phải pin.
+  - Contact: câu `contactLine` là `h2` của section (cỡ 20 → 28), email to hơn câu (cỡ 20 trên điện thoại, h2 từ 768px) để một địa chỉ dài vẫn vừa một dòng ở 375px, kèm `wrap-anywhere` phòng khi dài hơn nữa. `Link` có thêm tuỳ chọn `size` (`small` mặc định, `large` cho email).
+  - Link nào trong `site.links` còn rỗng thì ẩn, nên hiện tại Contact chỉ có một câu. Đã thử tạm với link giả (email 30 ký tự) ở 375/768/1440: không cuộn ngang, không chồng chữ, mọi link cao ≥ 44px, Tab đi qua đủ link và hiện vòng focus.
+  - Lighthouse mobile sau Task 4 (bản `out/`, server gzip, 3 lần): Performance 82, 81, 76; Accessibility, Best Practices, SEO đều 100; CLS 0; LCP 3.2–3.9 s, vẫn là headline Hero; TBT 280–610 ms. Cùng khoảng với Task 3, Performance 90+ vẫn là việc của Task 5.
 
 ## 1. Token
 
