@@ -8,7 +8,7 @@ Bản kế hoạch thiết kế đã duyệt. `CLAUDE.md` vẫn là spec gốc; 
 - [x] Task 2: Hero (Lighthouse Performance chưa đạt 90, xem ghi chú bên dưới)
 - [x] Task 3: EdgePipeline (Lighthouse Performance vẫn chưa ổn định trên 90, xem ghi chú)
 - [x] Task 4: Capabilities, Approach, Contact (Lighthouse Performance vẫn chưa đạt 90, xem ghi chú)
-- [ ] Task 5: polish, metadata, OG image, Lighthouse, deploy (đo lại Performance bằng PageSpeed Insights trên bản Vercel)
+- [x] Task 5: polish, metadata, OG image, Lighthouse, deploy. Trang live: https://self-intro-snowy.vercel.app. PageSpeed mobile trên bản Vercel: Performance 97–99, nên việc chưa đạt 90 ở Task 2–4 chỉ do đo trên máy này.
 
 ## Quyết định đã chốt
 
@@ -45,6 +45,16 @@ Bản kế hoạch thiết kế đã duyệt. `CLAUDE.md` vẫn là spec gốc; 
   - Contact: câu `contactLine` là `h2` của section (cỡ 20 → 28), email to hơn câu (cỡ 20 trên điện thoại, h2 từ 768px) để một địa chỉ dài vẫn vừa một dòng ở 375px, kèm `wrap-anywhere` phòng khi dài hơn nữa. `Link` có thêm tuỳ chọn `size` (`small` mặc định, `large` cho email).
   - Link nào trong `site.links` còn rỗng thì ẩn, nên hiện tại Contact chỉ có một câu. Đã thử tạm với link giả (email 30 ký tự) ở 375/768/1440: không cuộn ngang, không chồng chữ, mọi link cao ≥ 44px, Tab đi qua đủ link và hiện vòng focus.
   - Lighthouse mobile sau Task 4 (bản `out/`, server gzip, 3 lần): Performance 82, 81, 76; Accessibility, Best Practices, SEO đều 100; CLS 0; LCP 3.2–3.9 s, vẫn là headline Hero; TBT 280–610 ms. Cùng khoảng với Task 3, Performance 90+ vẫn là việc của Task 5.
+- Metadata và deploy (Task 5):
+  - Deploy qua GitHub (`thanhthanhhp123/self-intro`) nối với Vercel: mỗi lần push lên `main` là Vercel tự build và deploy. Domain production: `self-intro-snowy.vercel.app`.
+  - URL tuyệt đối (canonical, OG, robots, sitemap) lấy từ `lib/site-url.ts`: dùng `site.url` nếu có, không thì `VERCEL_PROJECT_PRODUCTION_URL` do Vercel đặt lúc build, không nữa thì localhost. Có domain riêng thì điền `site.url`.
+  - OG image `app/opengraph-image.tsx` (`next/og`) được vẽ lúc build từ `site.ts`. Bộ vẽ ảnh chỉ đọc được TTF tĩnh, nên font nằm ở `assets/fonts/` (Bricolage SemiBold và Regular, lấy từ Google Fonts, giấy phép OFL, có đủ dấu tiếng Việt).
+  - Với `output: "export"`, `opengraph-image`, `robots.ts`, `sitemap.ts` phải có `export const dynamic = "force-static"`, nếu không build sẽ lỗi.
+  - Ảnh OG xuất ra file `opengraph-image` không có đuôi, nên Vercel trả về `application/octet-stream`. `vercel.json` ép `Content-Type: image/png` cho đường dẫn này; đã kiểm tra trên bản live.
+  - Màu cho những chỗ không dùng được biến CSS (thẻ `theme-color`, OG image) nằm trong `lib/tokens.ts`. Đổi token trong `globals.css` thì sửa cả file này.
+  - PageSpeed Insights mobile trên bản live (Lighthouse 13.5, Moto G Power giả lập), 3 lần: Performance 99, 99, 97; Accessibility, Best Practices, SEO đều 100; CLS 0; LCP 2.1–2.6 s; TBT 10–30 ms. Lần 1 và 2 giống hệt nhau, có thể lần 2 là kết quả cache; lần 3 chạy trên bản deploy mới.
+  - API PageSpeed không có key hay hết quota (lỗi 429). Khi đó chạy trên trang pagespeed.web.dev.
+  - Chrome trên máy này đang bật `prefers-reduced-motion: reduce` (theo cài đặt hiệu ứng của Windows), nên mở trang bằng Chrome thường sẽ luôn thấy bản không pin. Muốn xem bản pin thì bật lại hiệu ứng trong Windows, hoặc giả lập trong DevTools (Rendering > Emulate CSS media feature).
 
 ## 1. Token
 
