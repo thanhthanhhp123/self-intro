@@ -5,10 +5,10 @@ Bản kế hoạch thiết kế đã duyệt. `CLAUDE.md` vẫn là spec gốc; 
 ## Tiến độ
 
 - [x] Task 1: layout, token, font, SmoothScroll, `site.ts`
-- [ ] Task 2: Hero
+- [x] Task 2: Hero (Lighthouse Performance chưa đạt 90, xem ghi chú bên dưới)
 - [ ] Task 3: EdgePipeline
-- [ ] Task 4: Capabilities, Approach, Contact
-- [ ] Task 5: polish, metadata, OG image, Lighthouse, deploy
+- [ ] Task 4: Capabilities, Approach, Contact (section Contact phải có `id="contact"`: nút Contact ở Hero trỏ tới đó)
+- [ ] Task 5: polish, metadata, OG image, Lighthouse, deploy (đo lại Performance bằng PageSpeed Insights trên bản Vercel)
 
 ## Quyết định đã chốt
 
@@ -23,6 +23,12 @@ Bản kế hoạch thiết kế đã duyệt. `CLAUDE.md` vẫn là spec gốc; 
 - Tailwind chỉ quét `app/` và `components/` (`@source` trong `globals.css`). Thêm thư mục mới có class Tailwind thì phải khai báo thêm.
 - Bảng màu và thang cỡ chữ mặc định của Tailwind đã bị xoá: chỉ có class theo token (`bg-paper`, `text-ink`, `text-caption` … `text-display`).
 - Lighthouse báo `NO_FCP` khi trang còn trống; từ Task 2 mới có điểm. Lighthouse 13.5 yêu cầu Node ≥ 22.19 (máy đang có 22.16, vẫn chạy nhưng có cảnh báo).
+- Lighthouse mobile sau Task 2 (bản `out/` build production, chạy trên localhost): Performance 68–83, Accessibility 100, Best Practices 100, SEO 100, CLS 0. Performance **chưa đạt** mức 90.
+  - Nguyên nhân: benchmark index của máy chỉ 700–900, thấp hơn mức Lighthouse giả định khi làm chậm CPU 4 lần, nên điểm lệch tới 15 giữa các lần chạy trên cùng một code. Bản Next.js trống (bỏ SmoothScroll và Viewfinder, không có GSAP hay Lenis) cũng chỉ được 79–82, nên phần thiếu là do máy và framework, không phải do Hero.
+  - LCP là headline, không animate. Trên localhost, JS tải xong trước lần paint đầu nên chiếm main thread; khi deploy thật thì HTML thường paint trước.
+  - Việc cần làm ở Task 5: đo bằng PageSpeed Insights trên bản Vercel. Nếu vẫn dưới 90 thì xem xét khởi tạo Lenis và GSAP sau lần paint đầu.
+- Kiểm tra độ rộng 375/768/1440 và reduced motion: cửa sổ Chrome không đổi được kích thước, nên dùng headless Chrome qua CDP (`Emulation.setDeviceMetricsOverride`, `Emulation.setEmulatedMedia`).
+- Đổi `cd` vào `out/` rồi build trên Windows sẽ lỗi `EBUSY`, vì thư mục đang bị khoá. Chạy build từ gốc repo.
 
 ## 1. Token
 
