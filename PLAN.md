@@ -6,7 +6,7 @@ Bản kế hoạch thiết kế đã duyệt. `CLAUDE.md` vẫn là spec gốc; 
 
 - [x] Task 1: layout, token, font, SmoothScroll, `site.ts`
 - [x] Task 2: Hero (Lighthouse Performance chưa đạt 90, xem ghi chú bên dưới)
-- [ ] Task 3: EdgePipeline
+- [x] Task 3: EdgePipeline (Lighthouse Performance vẫn chưa ổn định trên 90, xem ghi chú)
 - [ ] Task 4: Capabilities, Approach, Contact (section Contact phải có `id="contact"`: nút Contact ở Hero trỏ tới đó)
 - [ ] Task 5: polish, metadata, OG image, Lighthouse, deploy (đo lại Performance bằng PageSpeed Insights trên bản Vercel)
 
@@ -29,6 +29,16 @@ Bản kế hoạch thiết kế đã duyệt. `CLAUDE.md` vẫn là spec gốc; 
   - Việc cần làm ở Task 5: đo bằng PageSpeed Insights trên bản Vercel. Nếu vẫn dưới 90 thì xem xét khởi tạo Lenis và GSAP sau lần paint đầu.
 - Kiểm tra độ rộng 375/768/1440 và reduced motion: cửa sổ Chrome không đổi được kích thước, nên dùng headless Chrome qua CDP (`Emulation.setDeviceMetricsOverride`, `Emulation.setEmulatedMedia`).
 - Đổi `cd` vào `out/` rồi build trên Windows sẽ lỗi `EBUSY`, vì thư mục đang bị khoá. Chạy build từ gốc repo.
+- EdgePipeline (Task 3):
+  - Code nằm trong `components/pipeline/`: `Stage` ghép `Frame`, `Device`, `Metrics`; `timeline.ts` dựng timeline; `PinnedSection` là phần client duy nhất. Mọi target của GSAP có thuộc tính `data-pl`.
+  - Stage có hai chế độ: không có `step` thì là trạng thái đầu của animation, có `step` thì đứng yên ở cuối bước đó (dùng cho bản reduced motion).
+  - Dưới 1024px, pin vẫn áp lên cả section nhưng bắt đầu khi thanh bước chạm mép trên, nên tiêu đề cuộn đi trước. Pin cả tiêu đề thì không vừa màn 375×548. Wireframe mobile ở trên vẽ tiêu đề nằm trong vùng pin; bản code khác chỗ này.
+  - Chiều rộng stage tính theo chiều cao màn hình (`max-w-[calc((100svh-…)*1.6)]`), nên stage luôn nằm gọn trong viewport lúc pin (đã đo ở 320, 375×548, 375×667, 390×844, 768×1024, 1024×768, 1366×657, 1440×900).
+  - Pin chỉ chạy hết khi sau section còn đủ nội dung để cuộn. Lúc làm Task 3 chưa có section nào phía sau, nên ở 390×844 và 768×1024 trang hết trước khi timeline tới cuối (lúc test đã chèn tạm một khối trống). Sau Task 4 cần kiểm tra lại.
+  - Lighthouse mobile sau Task 3 (bản `out/`, localhost, mỗi cấu hình chạy 3 lần): Accessibility, Best Practices, SEO đều 100, CLS 0.
+    - Server tĩnh không nén (giống lúc đo Task 2): Performance 59, 65, 68. Mạng giả lập tải JS và HTML ở dạng chưa nén, nên điểm bị kéo xuống.
+    - Server có gzip (gần với Vercel hơn): Performance 82, 83, 85; LCP 3.2 s (headline Hero), TBT 330–420 ms.
+    - Đối chứng trên cùng server gzip, bỏ tạm EdgePipeline: Performance 84, 84, 91. Chênh lệch nằm trong biên dao động của máy, nên pipeline không làm trang chậm đi đáng kể. Performance 90+ vẫn là việc của Task 5.
 
 ## 1. Token
 

@@ -1,3 +1,4 @@
+import EdgePipeline from "@/components/sections/EdgePipeline";
 import Hero from "@/components/sections/Hero";
 
 // Sections are added in order as each task lands: Hero, EdgePipeline,
@@ -6,6 +7,7 @@ export default function Home() {
   return (
     <main>
       <Hero />
+      <EdgePipeline />
     </main>
   );
 }
